@@ -4,7 +4,7 @@ if [ $# -eq 0 ]; then
    echo "Must have API key to run example"
    exit 1
 fi
-morphology_compound_components_data="Sample"
+morphology_compound_components_data="Rechtsschutzversicherungsgesellschaften"
 
 curl "https://api.rosette.com/rest/v1/morphology/compound-components" \
   -H "user_key: $1" \

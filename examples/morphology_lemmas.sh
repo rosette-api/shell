@@ -4,7 +4,7 @@ if [ $# -eq 0 ]; then
    echo "Must have API key to run example"
    exit 1
 fi
-morphology_lemmas_data="Sample"
+morphology_lemmas_data="The fact is that the geese just went back to get a rest and I"'"'"m not banking on their return soon"
 
 curl "https://api.rosette.com/rest/v1/morphology/lemmas" \
   -H "user_key: $1" \
