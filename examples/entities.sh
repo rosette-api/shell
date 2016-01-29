@@ -1,12 +1,18 @@
 #!/bin/bash -e
 
-if [ $# -eq 0 ]; then
-    echo "Must have API key to run example"
+if [ $# -lt 1 ]; then
+    echo "usage: $0 api_key [alternate_url]"
     exit 1
 fi
 entities_text_data="Bill Murray will appear in new Ghostbusters film: Dr. Peter Venkman was spotted filming a cameo in Boston this… http://dlvr.it/BnsFfS"
 
-curl "https://api.rosette.com/rest/v1/entities" \
+if [ -z "$2" ]; then
+    url="https://api.rosette.com/rest/v1/entities"
+else
+    url="$2/entities"
+fi
+
+curl "$url" \
   -H "user_key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \

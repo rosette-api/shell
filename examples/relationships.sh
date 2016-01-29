@@ -1,12 +1,18 @@
 #!/bin/bash -e
 
-if [ $# -eq 0 ]; then
-   echo "Must have API key to run example"
-   exit 1
+if [ $# -lt 1 ]; then
+    echo "usage: $0 api_key [alternate_url]"
+    exit 1
 fi
 relationships_text_data="Bill Murray is in the new Ghostbusters film!"
 
-curl "https://api.rosette.com/rest/v1/relationships" \
+if [ -z "$2" ]; then
+    url="https://api.rosette.com/rest/v1/relationships"
+else
+    url="$2/relationships"
+fi
+
+curl "$url" \
   -H "user_key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \

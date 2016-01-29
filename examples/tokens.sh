@@ -1,12 +1,18 @@
 #!/bin/bash -e
 
-if [ $# -eq 0 ]; then
-   echo "Must have API key to run example"
-   exit 1
+if [ $# -lt 1 ]; then
+    echo "usage: $0 api_key [alternate_url]"
+    exit 1
 fi
 tokens_data="北京大学生物系主任办公室内部会议"
 
-curl "https://api.rosette.com/rest/v1/tokens" \
+if [ -z "$2" ]; then
+    url="https://api.rosette.com/rest/v1/tokens"
+else
+    url="$2/tokens"
+fi
+
+curl "$url" \
   -H "user_key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \
