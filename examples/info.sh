@@ -1,8 +1,14 @@
 #!/bin/bash -e
 
-if [ $# -eq 0 ]; then
-   echo "Must have API key to run example"
-   exit 1
+if [ $# -lt 1 ]; then
+    echo "usage: $0 api_key [alternate_url]"
+    exit 1
 fi
 
-curl "https://api.rosette.com/rest/v1/info" -H "user_key: $1"
+if [ -z "$2" ]; then
+    url="https://api.rosette.com/rest/v1/info"
+else
+    url="$2/info"
+fi
+
+curl "$url" -H "user_key: $1"
