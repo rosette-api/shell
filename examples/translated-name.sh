@@ -16,4 +16,4 @@ curl "$url" \
   -H "user_key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \
-  -d "{\"name\": \"$translated_name_data\" \"targetLanguage\": \"eng\"}"
+  -d "{\"name\": \"$translated_name_data\", \"targetLanguage\": \"eng\"}"
