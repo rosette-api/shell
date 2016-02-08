@@ -30,6 +30,13 @@ if [ -z $api_key ]; then
     usage
 fi
 
+#Checks if Rosette API key is valid
+match=$(curl "https://api.rosette.com/rest/v1/ping" -H "user_key: ${API_KEY}" |  grep -o "forbidden")
+if [ ! -z $match ]; then
+    echo -e "\nInvalid Rosette API Key\n"
+    exit 1
+fi  
+
 badRequest="badRequest"
 
 if [ "$filename" != "na" ]; then
