@@ -4,7 +4,7 @@ if [ $# -lt 1 ]; then
     echo "usage: $0 api_key [alternate_url]"
     exit 1
 fi
-relationships_text_data="The Ghostbusters movie was filmed in Boston."
+relationships_text_data="Bill Murray is in the new Ghostbusters film!"
 
 if [ -z "$2" ]; then
     url="https://api.rosette.com/rest/v1/relationships"
