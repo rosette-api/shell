@@ -38,6 +38,13 @@ if [ ! -z $match ]; then
 fi  
 
 badRequest="badRequest"
+if [ "$alt_url" != "na" ]; then
+    case $alt_url in
+        */) alt_url=${alt_url::-1}
+            echo "Slash detected"
+            ;;
+    esac
+fi
 
 if [ "$filename" != "na" ]; then
     # single file operation
@@ -81,3 +88,4 @@ else
     done
 fi
 
+echo $alt_url
