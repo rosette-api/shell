@@ -11,6 +11,7 @@ function usage {
 
 filename="na"
 alt_url="na"
+ping_url="https://api.rosette.com/rest/v1"
 
 while getopts ":a:f:u:" opt; do
     case $opt in
@@ -30,21 +31,31 @@ if [ -z $api_key ]; then
     usage
 fi
 
-#Checks if Rosette API key is valid
-match=$(curl "https://api.rosette.com/rest/v1/ping" -H "user_key: ${API_KEY}" |  grep -o "forbidden")
-if [ ! -z $match ]; then
-    echo -e "\nInvalid Rosette API Key\n"
-    exit 1
-fi  
-
-badRequest="badRequest"
+# strip the trailing slash off of the alt_url if necessary
 if [ "$alt_url" != "na" ]; then
     case $alt_url in
         */) alt_url=${alt_url::-1}
             echo "Slash detected"
             ;;
     esac
+    ping_url=${alt_url}
 fi
+
+#Checks for valid url
+match=$(curl "${ping_url}/ping" -H "user_key: ${API_KEY}" |  grep -o "Rosette API")
+if [ "${match}" = "" ]; then
+    echo -e "\n${ping_url} server not responding\n"
+    exit 1
+fi  
+
+#Checks if Rosette API key is valid
+match=$(curl "${ping_url}/ping" -H "user_key: ${API_KEY}" |  grep -o "forbidden")
+if [ ! -z ${match} ]; then
+    echo -e "\nInvalid Rosette API Key\n"
+    exit 1
+fi  
+
+badRequest="badRequest"
 
 if [ "$filename" != "na" ]; then
     # single file operation
