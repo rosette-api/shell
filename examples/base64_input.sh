@@ -15,7 +15,7 @@ fi
 encoded_data=`echo "$entities_text_data" | base64 -w0`
 
 curl "$url" \
-  -H "user_key: $1" \
+  -H "X-RosetteAPI-Key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \
   -d "{\"content\":\"$encoded_data\",\"contentType\":\"application/octet-stream\"}"

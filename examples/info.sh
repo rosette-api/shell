@@ -11,4 +11,4 @@ else
     url="$2/info"
 fi
 
-curl "$url" -H "user_key: $1"
+curl "$url" -H "X-RosetteAPI-Key: $1"
