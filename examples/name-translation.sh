@@ -16,4 +16,4 @@ curl "$url" \
   -H "X-RosetteAPI-Key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \
-  -d "{\"name\": \"$translated_name_data\", \"targetLanguage\": \"eng\", \"targetScript\": \"Latn\", \"targetScheme\": \"IC\"}"
+  -d "{\"name\": \"$translated_name_data\", \"targetLanguage\": \"eng\", \"targetScript\": \"Latn\"}"
