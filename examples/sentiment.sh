@@ -13,7 +13,7 @@ else
 fi
 
 curl "$url" \
-  -H "user_key: $1" \
+  -H "X-RosetteAPI-Key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \
-  -d "{\"content\": \"$sentiment_text_data\", \"options\": {\"model\": \"short-string\", \"explain\": true}}"
+  -d "{\"content\": \"$sentiment_text_data\", \"language\": \"eng\", \"options\": {\"model\": \"short-string\", \"explain\": true}}"

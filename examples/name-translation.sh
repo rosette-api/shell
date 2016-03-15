@@ -7,13 +7,13 @@ fi
 translated_name_data="معمر محمد أبو منيار القذاف"
 
 if [ -z "$2" ]; then
-    url="https://api.rosette.com/rest/v1/translated-name"
+    url="https://api.rosette.com/rest/v1/name-translation"
 else
-    url="$2/translated-name"
+    url="$2/name-translation"
 fi
 
 curl "$url" \
-  -H "user_key: $1" \
+  -H "X-RosetteAPI-Key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \
-  -d "{\"name\": \"$translated_name_data\", \"targetLanguage\": \"eng\"}"
+  -d "{\"name\": \"$translated_name_data\", \"targetLanguage\": \"eng\", \"targetScript\": \"Latn\"}"
