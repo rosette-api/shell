@@ -16,4 +16,4 @@ curl "$url" \
   -H "X-RosetteAPI-Key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \
-  -d "{\"content\": \"$relationships_text_data\", \"options\": {\"model\": \"short-string\", \"explain\": true}}"
+  -d "{\"content\": \"$relationships_text_data\"}"
