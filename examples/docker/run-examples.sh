@@ -56,6 +56,7 @@ if [ ! -z ${match} ]; then
 fi  
 
 badRequest="badRequest"
+err=0
 
 if [ "$filename" != "na" ]; then
     # single file operation
@@ -70,13 +71,16 @@ if [ "$filename" != "na" ]; then
         echo -e "\nUnexpected response\n"
         exit 1
     fi
-    responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
-    if [ $responseCount -eq 0 2>/dev/null]; then
-        echo -e "\nEmpty response\n"
-        exit 1
+    if [[ $result == *"["* ]]; then
+        responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
+        if [ $responseCount -eq 0 2>/dev/null]; then
+            echo -e "\nEmpty response\n"
+            exit 1
+        fi
     fi
 else
     # all files with .sh 
+    chmod 0755 ../source/*.sh
     for file in ../source/*.sh; do
         echo -e "\n---------- $file start -------------"
         if [ "$alt_url" != "na"  ]; then
@@ -88,15 +92,18 @@ else
         # Check for bad request and fail the script if matched
         if [[ ${result} =~ .*$badRequest.* ]]; then
             echo -e "\nUnexpected response\n"
-            exit 1
+            err=1
         fi
-        responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
-        if [ $responseCount -eq 0 2>/dev/null ]; then
-            echo -e "\nEmpty response\n"
-            exit 1
+        if [[ $result == *"["* ]]; then
+            responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
+            if [ $responseCount -eq 0 2>/dev/null]; then
+                echo -e "\nEmpty response\n"
+                err=1
+            fi
         fi
         echo -e "\n---------- $file end -------------"
     done
 fi
 
 echo $alt_url
+exit $err
