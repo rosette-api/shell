@@ -77,6 +77,7 @@ if [ "$filename" != "na" ]; then
     fi
 else
     # all files with .sh 
+    chmod 0755 ../source/*.sh
     for file in ../source/*.sh; do
         echo -e "\n---------- $file start -------------"
         if [ "$alt_url" != "na"  ]; then
