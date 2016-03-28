@@ -13,7 +13,7 @@ else
     url="$2/name-similarity"
 fi
 
-curl "$url" \
+curl -s "$url" \
   -H "X-RosetteAPI-Key: $1" \
   -H 'Content-Type:application/json' \
   -H 'Accept:application/json' \

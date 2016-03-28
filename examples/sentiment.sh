@@ -15,7 +15,7 @@ else
     url="$2/sentiment"
 fi
 
-curl \
+curl -s \
   -F "content=@${TMPFILE}" \
   -F "request= {\"language\": \"eng\"};type=application/json" \
   -H "X-RosetteAPI-Key: $1" \

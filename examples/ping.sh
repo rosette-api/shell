@@ -11,4 +11,4 @@ else
     url="$2/ping"
 fi
 
-curl "$url" -H "X-RosetteAPI-Key: $1"
+curl -s "$url" -H "X-RosetteAPI-Key: $1"
