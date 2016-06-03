@@ -12,6 +12,9 @@ else
     url="$2/entities"
 fi
 
+# to improve performance, and if you don't need the QID, set this option inside json in -d flag
+# \"options\": {\"linkEntities\": false }
+
 curl -s "$url" \
   -H "X-RosetteAPI-Key: $1" \
   -H 'Content-Type:application/json' \
