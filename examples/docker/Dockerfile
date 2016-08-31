@@ -9,13 +9,12 @@ RUN apt-get -yqq update \
     jq \
     iputils-ping
 
-RUN mkdir rosette
-WORKDIR rosette
-ENV ALT_URL "na"
-ENV FILENAME "na"
+RUN mkdir /scripts
+WORKDIR /scripts
 COPY run-examples.sh run-examples.sh
+RUN chmod 0755 run-examples.sh
 
-VOLUME ["source"]
+# allow interactive bash inside docker container
+CMD ./run-examples.sh $API_KEY $FILENAME $ALT_URL 
 
-CMD ./run-examples.sh -a $API_KEY -f $FILENAME -u $ALT_URL
-
+VOLUME ["/source"]

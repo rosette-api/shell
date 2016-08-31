@@ -1,76 +1,70 @@
 #!/bin/bash
 
-function usage {
-    echo "usage: $0 -a api_key [-f example_file.sh] [-u alternate_url]"
-    echo "  api_key       - Rosette API key (required)"
-    echo "  source_file   - bash example file (optional single file)"
-    echo "  alternate_url - Alternate service URL (optional)"
-    echo "Runs the example file(s)"
+ping_url="https://api.rosette.com/rest/v1"
+retcode=0
+errors=( "Exception" "processingFailure" "badRequest" "ParseError" "ValueError" "SyntaxError" "AttributeError" "ImportError" )
+
+#------------ Start Functions --------------------------
+
+#Gets called when the user doesn't provide any args
+function HELP {
+    echo -e "\nusage: API_KEY [FILENAME] [ALT_URL]"
+    echo "  API_KEY      - Rosette API key (required)"
+    echo "  FILENAME     - Shell script file (optional)"
+    echo "  ALT_URL      - Alternate service URL (optional)"
     exit 1
 }
 
-filename="na"
-alt_url="na"
-ping_url="https://api.rosette.com/rest/v1"
-
-while getopts ":a:f:u:" opt; do
-    case $opt in
-        a)
-            api_key=$OPTARG
-            ;;
-        f)
-            filename=$OPTARG
-            ;;
-        u)
-            alt_url=$OPTARG
-            ;;
-    esac
-done
-
-if [ -z $api_key ]; then
-    usage
+if [ ! -z ${ALT_URL} ]; then
+    ping_url=${ALT_URL}
 fi
-
-# strip the trailing slash off of the alt_url if necessary
-if [ "$alt_url" != "na" ]; then
-    case $alt_url in
-        */) alt_url=${alt_url::-1}
-            echo "Slash detected"
-            ;;
-    esac
-    ping_url=${alt_url}
-fi
-
-#Checks for valid url
-match=$(curl "${ping_url}/ping" -H "X-RosetteAPI-Key: ${API_KEY}" |  grep -o "Rosette API")
-if [ "${match}" = "" ]; then
-    echo -e "\n${ping_url} server not responding\n"
-    exit 1
-fi  
 
 #Checks if Rosette API key is valid
-match=$(curl "${ping_url}/ping" -H "X-RosetteAPI-Key: ${API_KEY}" |  grep -o "forbidden")
-if [ ! -z ${match} ]; then
-    echo -e "\nInvalid Rosette API Key\n"
-    exit 1
-fi  
-
-badRequest="badRequest"
-err=0
-
-if [ "$filename" != "na" ]; then
-    # single file operation
-    if [ "$alt_url" != "na" ]; then
-        result=$(../source/$filename $api_key $alt_url)
-    else
-        result=$(../source/$filename $api_key)
-    fi
-    echo $result
-    # Check for bad request and fail the script if matched
-    if [[ ${result} =~ .*$badRequest.* ]]; then
-        echo -e "\nUnexpected response\n"
+function checkAPI {
+    match=$(curl "${ping_url}/ping" -H "X-RosetteAPI-Key: ${API_KEY}" |  grep -o "forbidden")
+    if [ ! -z $match ]; then
+        echo -e "\nInvalid Rosette API Key"
         exit 1
+    fi  
+}
+
+
+# strip the trailing slash off of the alt_url if necessary
+function cleanURL() {
+    if [ ! -z "${ALT_URL}" ]; then
+        case ${ALT_URL} in
+            */) ALT_URL=${ALT_URL::-1}
+                echo "Slash detected"
+                ;;
+        esac
+        ping_url=${ALT_URL}
     fi
+}
+
+#Checks for valid url
+function validateURL() {
+    match=$(curl "${ping_url}/ping" -H "X-RosetteAPI-Key: ${API_KEY}" |  grep -o "Rosette API")
+    if [ "${match}" = "" ]; then
+        echo -e "\n${ping_url} server not responding\n"
+        exit 1
+    fi  
+}
+
+function runExample() {
+    echo -e "\n---------- ${1} start -------------"
+    result=""
+    if [ -z ${ALT_URL} ]; then
+        result="$(./${1} ${API_KEY} 2>&1 )"
+err=0
+    else
+        result="$(./${1} ${API_KEY} ${ALT_URL} 2>&1 )"
+    fi
+    echo "${result}"
+    echo -e "\n---------- ${1} end -------------"
+    for err in "${errors[@]}"; do 
+        if [[ ${result} == *"${err}"* ]]; then
+            retcode=1
+        fi
     if [[ $result == *"["* ]]; then
         responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
         if [ $responseCount -eq 0 2>/dev/null]; then
@@ -78,22 +72,8 @@ if [ "$filename" != "na" ]; then
             exit 1
         fi
     fi
-else
-    # all files with .sh 
     chmod 0755 ../source/*.sh
-    for file in ../source/*.sh; do
-        echo -e "\n---------- $file start -------------"
-        if [ "$alt_url" != "na"  ]; then
-            result=$($file $api_key $alt_url)
-        else
-            result=$($file $api_key)
-        fi
-        echo $result
-        # Check for bad request and fail the script if matched
-        if [[ ${result} =~ .*$badRequest.* ]]; then
-            echo -e "\nUnexpected response\n"
             err=1
-        fi
         if [[ $result == *"["* ]]; then
             responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
             if [ $responseCount -eq 0 2>/dev/null]; then
@@ -101,9 +81,50 @@ else
                 err=1
             fi
         fi
-        echo -e "\n---------- $file end -------------"
     done
+}
+
+#------------ End Functions ----------------------------
+
+#Gets API_KEY, FILENAME and ALT_URL if present
+while getopts ":API_KEY:FILENAME:ALT_URL" arg; do
+    case "${arg}" in
+        API_KEY)
+            API_KEY=${OPTARG}
+            ;;
+        ALT_URL)
+            ALT_URL=${OPTARG}
+            ;;
+        FILENAME)
+            FILENAME=${OPTARG}
+            ;;
+    esac
+done
+
+cleanURL
+
+validateURL
+
+#Copy the mounted content in /source to current WORKDIR
+cp -r -n /source/. .
+chmod 0755 ./examples/*.sh
+
+#Run the examples
+if [ ! -z ${API_KEY} ]; then
+    checkAPI
+    cd examples
+    if [ ! -z ${FILENAME} ]; then
+        echo -e "\nRunning example against: ${ping_url}\n"
+        runExample ${FILENAME}
+    else
+        echo -e "\nRunning examples against: ${ping_url}\n"
+        for file in *.sh; do
+            runExample ${file}
+        done
+    fi
+else 
+    HELP
 fi
 
-echo $alt_url
+exit ${retcode}
 exit $err
