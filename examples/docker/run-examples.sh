@@ -55,6 +55,7 @@ function runExample() {
     result=""
     if [ -z ${ALT_URL} ]; then
         result="$(./${1} ${API_KEY} 2>&1 )"
+err=0
     else
         result="$(./${1} ${API_KEY} ${ALT_URL} 2>&1 )"
     fi
@@ -64,11 +65,20 @@ function runExample() {
         if [[ ${result} == *"${err}"* ]]; then
             retcode=1
         fi
-        if [[ "${result}" == *"["* ]]; then
-            responseCount=`echo ${result} | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
-            if [ ${responseCount} -eq 0 2>/dev/null]; then
+    if [[ $result == *"["* ]]; then
+        responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
+        if [ $responseCount -eq 0 2>/dev/null]; then
+            echo -e "\nEmpty response\n"
+            exit 1
+        fi
+    fi
+    chmod 0755 ../source/*.sh
+            err=1
+        if [[ $result == *"["* ]]; then
+            responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
+            if [ $responseCount -eq 0 2>/dev/null]; then
                 echo -e "\nEmpty response\n"
-                exit 1
+                err=1
             fi
         fi
     done
@@ -117,3 +127,4 @@ else
 fi
 
 exit ${retcode}
+exit $err
