@@ -65,20 +65,18 @@ err=0
         if [[ ${result} == *"${err}"* ]]; then
             retcode=1
         fi
-    if [[ $result == *"["* ]]; then
-        responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
-        if [ $responseCount -eq 0 2>/dev/null]; then
-            echo -e "\nEmpty response\n"
-            exit 1
-        fi
-    fi
-    chmod 0755 ../source/*.sh
-            err=1
         if [[ $result == *"["* ]]; then
             responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
             if [ $responseCount -eq 0 2>/dev/null]; then
                 echo -e "\nEmpty response\n"
-                err=1
+                retcode=1
+            fi
+        fi
+        if [[ $result == *"["* ]]; then
+            responseCount=`echo $result | jq 'del(.requestId) | .[] | length' |  awk '{SUM += $1} END { print SUM }'`
+            if [ $responseCount -eq 0 2>/dev/null]; then
+                echo -e "\nEmpty response\n"
+                retcode=1
             fi
         fi
     done
@@ -127,4 +125,3 @@ else
 fi
 
 exit ${retcode}
-exit $err
