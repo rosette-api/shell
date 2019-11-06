@@ -1,15 +1,15 @@
 #!/bin/bash -e
 
 if [ $# -lt 1 ]; then
-    echo "usage: $0 api_key [alternate_url]"
-    exit 1
+  echo "usage: $0 api_key [alternate_url]"
+  exit 1
 fi
 morphology_compound_components_data="Rechtsschutzversicherungsgesellschaften"
 
 if [ -z "$2" ]; then
-    url="https://api.rosette.com/rest/v1/morphology/compound-components"
+  url="https://api.rosette.com/rest/v1/morphology/compound-components"
 else
-    url="$2/morphology/compound-components"
+  url="$2/morphology/compound-components"
 fi
 
 curl -s "$url" \

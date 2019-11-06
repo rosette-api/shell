@@ -1,15 +1,15 @@
 #!/bin/bash -e
 
 if [ $# -lt 1 ]; then
-    echo "usage: $0 api_key [alternate_url]"
-    exit 1
+  echo "usage: $0 api_key [alternate_url]"
+  exit 1
 fi
 relationships_text_data="Bill Gates, Microsoft"\'"s former CEO, is a philanthropist."
 
 if [ -z "$2" ]; then
-    url="https://api.rosette.com/rest/v1/relationships"
+  url="https://api.rosette.com/rest/v1/relationships"
 else
-    url="$2/relationships"
+  url="$2/relationships"
 fi
 
 curl -s "$url" \
