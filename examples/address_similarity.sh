@@ -5,7 +5,7 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
-address1='{ "houseNumber": "1600", "road": "Pennsylvania Ave N.W.", "city": "Washington", "state": "D.C.", "postcode": "20500" }'
+address1='{ "houseNumber": "1600", "road": "Pennsylvania Ave N.W.", "city": "Washington", "state": "DC", "postcode": "20500" }'
 address2='{ "houseNumber": "160", "road": "Pennsilvana Ave", "city": "Washington", "state": "D.C.", "postcode": "20500" }'
 
 if [ -z "$2" ]; then
