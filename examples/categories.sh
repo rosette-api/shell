@@ -4,7 +4,7 @@ if [ $# -lt 1 ]; then
   echo "usage: $0 api_key [alternate_url]"
   exit 1
 fi
-categories_url_data="https://www.rosette.com/about/"
+categories_url_data="https://www.babelstreet.com/rosette/"
 
 if [ -z "$2" ]; then
   url="https://api.rosette.com/rest/v1/categories"
